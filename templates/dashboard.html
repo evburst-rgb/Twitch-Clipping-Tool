@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+    <h1>Welcome, {{ display_name }}</h1>
+
+    <p>
+        <strong>Twitch Username:</strong>
+        {{ twitch_login }}
+    </p>
+
+    {% if live_status %}
+
+        <p style="color: green;">
+            <strong>Status:</strong> LIVE
+        </p>
+
+        <form action="/create-clip" method="POST">
+            <button type="submit">
+                Create Clip Now
+            </button>
+        </form>
+
+    {% else %}
+
+        <p style="color: red;">
+            <strong>Status:</strong> Offline
+        </p>
+
+        <p>
+            You must be live before creating a clip.
+        </p>
+
+    {% endif %}
+
+</body>
+</html>
