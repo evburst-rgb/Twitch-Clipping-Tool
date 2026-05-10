@@ -31,7 +31,15 @@ HELIX_URL = "https://api.twitch.tv/helix"
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    is_connected = "access_token" in session
+
+    return render_template(
+        "index.html",
+        is_connected=is_connected,
+        display_name=session.get("display_name"),
+        twitch_login=session.get("twitch_login"),
+        twitch_user_id=session.get("twitch_user_id")
+    ) 
 
 
 @app.route("/login")
@@ -121,6 +129,13 @@ def dashboard():
         display_name=session["display_name"],
         twitch_login=session["twitch_login"],
         live_status=live_status
+    )
+
+@app.route("/logout")
+def logout():
+    session.c
+    lear()
+    return redirect(url_for("index")
     )
 
 
