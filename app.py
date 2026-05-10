@@ -163,19 +163,10 @@ def create_clip():
 
     clip_url = f"https://clips.twitch.tv/{clip_id}"
 
-    return f"""
-    <h2>Clip Created!</h2>
-
-    <p>
-        <a href="{clip_url}" target="_blank">
-            View Clip
-        </a>
-    </p>
-
-    <a href="/dashboard">
-        Back to Dashboard
-    </a>
-    """
+    return render_template(
+        "clip_result.html",
+        clip_url=clip_url
+    )
 
 
 def get_headers():
