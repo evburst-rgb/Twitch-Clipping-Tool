@@ -105,7 +105,7 @@
             margin: 0 0 28px;
         }
 
-        .main-button {
+         .main-button {
             display: inline-block;
             text-decoration: none;
             color: #03101a;
@@ -115,11 +115,18 @@
             border-radius: 15px;
             box-shadow:
                 0 0 22px rgba(0, 207, 255, 0.48),
-                inset 0 0 10px rgba(255,255,255,0.22);
+                 inset 0 0 10px rgba(255,255,255,0.22);
             margin-bottom: 24px;
             transition: 0.15s ease;
         }
 
+        .button-reset {
+             border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
         .main-button:hover {
             transform: translateY(-1px);
             box-shadow:
@@ -172,12 +179,21 @@
 
         {% if is_connected %}
             <div class="status connected">CONNECTED TO TWITCH</div>
+            {% if live_status %}
+            <div class="status connected">CHANNEL IS LIVE</div>
+        {% else %}
+             <div class="status disconnected">CHANNEL IS OFFLINE</div>
+        {% endif %}
 
             <p class="subtext">
                 Welcome, {{ display_name }}. Keep this app connected while you stream.
             </p>
 
-            <a href="/dashboard" class="main-button">Open Dashboard</a>
+            <form action="/create-clip" method="POST">
+                <button type="submit" class="main-button button-reset">
+                    Create Clip Now
+            </button>
+        </form>
 
             <div class="info-box">
                 <p><strong>Status:</strong> Connected</p>
