@@ -32,14 +32,19 @@ HELIX_URL = "https://api.twitch.tv/helix"
 @app.route("/")
 def index():
     is_connected = "access_token" in session
+    live_status = False
+
+    if is_connected:
+        live_status = check_live_status(session["twitch_user_id"])
 
     return render_template(
         "index.html",
         is_connected=is_connected,
         display_name=session.get("display_name"),
         twitch_login=session.get("twitch_login"),
-        twitch_user_id=session.get("twitch_user_id")
-    ) 
+        twitch_user_id=session.get("twitch_user_id"),
+        live_status=live_status
+    )
 
 
 @app.route("/login")
@@ -111,7 +116,7 @@ def callback():
     session["display_name"] = user["display_name"]
     session["twitch_login"] = user["login"]
 
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("index"))
 
 
 @app.route("/dashboard")
@@ -133,13 +138,19 @@ def dashboard():
 
 @app.route("/logout")
 def logout():
-    session.c
-    lear()
+    session.clear()
     return redirect(url_for("index")
     )
 
+@app.route("/clip-now")
+def clip_now():
+    if "access_token" not in session:
+        return redirect(url_for("index")
+        )
+    
 
-@app.route("/create-clip", methods=["POST"])
+    return create_clip()
+@app.route("/create-clip", methods=["GET", "POST"])
 def create_clip():
 
     if "access_token" not in session:
@@ -160,12 +171,14 @@ def create_clip():
         return data, 400
 
     clip_id = data["data"][0]["id"]
-
     clip_url = f"https://clips.twitch.tv/{clip_id}"
+    chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
+    chat_success, chat_response = send_chat_message(chat_message)
 
     return render_template(
-        "clip_result.html",
-        clip_url=clip_url
+    "clip_result.html",
+    clip_url=clip_url,
+    chat_success=chat_success
     )
 
 
@@ -174,7 +187,6 @@ def get_headers():
     return {
         "Authorization":
         f"Bearer {session['access_token']}",
-
         "Client-Id":
         CLIENT_ID
     }
@@ -205,6 +217,25 @@ def check_live_status(user_id):
     data = response.json()
 
     return len(data.get("data", [])) > 0
+
+
+def send_chat_message(message):
+
+    response = requests.post(
+        f"{HELIX_URL}/chat/messages",
+        headers={
+            "Authorization": f"Bearer {session['access_token']}",
+            "Client-Id": CLIENT_ID,
+            "Content-Type": "application/json"
+        },
+        json={
+            "broadcaster_id": session["twitch_user_id"],
+            "sender_id": session["twitch_user_id"],
+            "message": message
+        }
+    )
+
+    return response.status_code == 200, response.json()
 
 
 if __name__ == "__main__":
