@@ -1,17 +1,209 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Twitch Auto Clipper</title>
+    <title>EvBurst Clipping Tool</title>
+    <link rel="icon" type="image/png" href="/static/evburst_clipping_tool.png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(0, 207, 255, 0.28), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(184, 77, 255, 0.28), transparent 35%),
+                linear-gradient(135deg, #03040c, #08091c 45%, #050612);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(circle, black, transparent 75%);
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            width: 540px;
+            max-width: 92%;
+            background: rgba(8, 10, 28, 0.94);
+            border: 1px solid rgba(0, 207, 255, 0.5);
+            border-radius: 26px;
+            box-shadow:
+                0 0 35px rgba(0, 207, 255, 0.28),
+                0 0 75px rgba(184, 77, 255, 0.20);
+            padding: 38px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .app-logo {
+            width: 140px;
+            margin-bottom: 16px;
+            filter:
+                drop-shadow(0 0 12px rgba(0,207,255,0.5))
+                drop-shadow(0 0 18px rgba(184,77,255,0.4));
+        }
+
+        .logo {
+            font-size: 44px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #00cfff, #ffffff, #b84dff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .title {
+            font-size: 15px;
+            letter-spacing: 7px;
+            color: #c9d8ff;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+
+        .connected {
+            background: rgba(0, 255, 140, 0.15);
+            border: 1px solid rgba(0, 255, 140, 0.7);
+            color: #7dffbf;
+        }
+
+        .disconnected {
+            background: rgba(255, 70, 110, 0.13);
+            border: 1px solid rgba(255, 90, 130, 0.65);
+            color: #ff8aa0;
+        }
+
+        .subtext {
+            color: #b9c4d8;
+            line-height: 1.6;
+            font-size: 15px;
+            margin: 0 0 28px;
+        }
+
+        .main-button {
+            display: inline-block;
+            text-decoration: none;
+            color: #03101a;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00cfff, #b84dff);
+            padding: 16px 28px;
+            border-radius: 15px;
+            box-shadow:
+                0 0 22px rgba(0, 207, 255, 0.48),
+                inset 0 0 10px rgba(255,255,255,0.22);
+            margin-bottom: 24px;
+            transition: 0.15s ease;
+        }
+
+        .main-button:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 0 34px rgba(0, 207, 255, 0.55),
+                0 0 40px rgba(184, 77, 255, 0.35);
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 17px;
+            padding: 16px 18px;
+            color: #cbd6ea;
+            font-size: 14px;
+            text-align: left;
+            margin-top: 4px;
+        }
+
+        .info-box p {
+            margin: 8px 0;
+        }
+
+        .logout {
+            display: inline-block;
+            margin-top: 18px;
+            color: #9fb7d8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logout:hover {
+            color: #00cfff;
+        }
+
+        .footer {
+            margin-top: 22px;
+            font-size: 12px;
+            color: #61708d;
+            letter-spacing: 1px;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="card">
+        <img src="/static/evburst_clipping_tool.png" class="app-logo">
 
-    <h1>Twitch Auto Clipper</h1>
+        <div class="logo">EVBURST</div>
+        <div class="title">CLIPPING TOOL</div>
 
-    <p>Login with Twitch to connect your channel.</p>
+        {% if is_connected %}
+            <div class="status connected">CONNECTED TO TWITCH</div>
 
-    <a href="/login">
-        <button>Login with Twitch</button>
-    </a>
+            <p class="subtext">
+                Welcome, {{ display_name }}. Keep this app connected while you stream.
+            </p>
 
+            <a href="/dashboard" class="main-button">Open Dashboard</a>
+
+            <div class="info-box">
+                <p><strong>Status:</strong> Connected</p>
+                <p><strong>Twitch Username:</strong> {{ twitch_login }}</p>
+                <p><strong>Reminder:</strong> Clipping only works while your channel is live.</p>
+            </div>
+
+            <a href="/logout" class="logout">Logout</a>
+
+        {% else %}
+            <div class="status disconnected">TWITCH NOT CONNECTED</div>
+
+            <p class="subtext">
+                Connect your Twitch account to let the EvBurst Clipping Tool create clips from your live stream
+                and automatically post them into your Twitch chat.
+            </p>
+
+            <a href="/login" class="main-button">Login with Twitch</a>
+
+            <div class="info-box">
+                <p><strong>Required Twitch permissions:</strong> clipping and posting chat messages.</p>
+                <p><strong>Purpose:</strong> Create clips from your live stream and post them into your Twitch chat.</p>
+            </div>
+        {% endif %}
+
+        <div class="footer">Tool For Clip Optimization</div>
+    </div>
 </body>
 </html>
