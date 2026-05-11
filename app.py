@@ -125,6 +125,73 @@ def get_user_by_streamdeck_key(streamdeck_key):
     return user
 
 
+def refresh_user_token(user):
+    refresh_token = user.get("refresh_token")
+
+    if not refresh_token:
+        return None
+
+    response = requests.post(
+        TOKEN_URL,
+        data={
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+    )
+
+    token_json = response.json()
+
+    if response.status_code != 200:
+        return None
+
+    access_token = token_json["access_token"]
+    new_refresh_token = token_json.get("refresh_token", refresh_token)
+    expires_in = token_json.get("expires_in", 0)
+    token_expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE users
+        SET access_token = %s,
+            refresh_token = %s,
+            token_expires_at = %s,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE twitch_user_id = %s
+        RETURNING *;
+    """, (
+        access_token,
+        new_refresh_token,
+        token_expires_at,
+        user["twitch_user_id"]
+    ))
+
+    updated_user = cur.fetchone()
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return updated_user
+
+
+def get_valid_user_token(user):
+    expires_at = user.get("token_expires_at")
+
+    if not expires_at:
+        return user
+
+    if datetime.utcnow() >= expires_at:
+        refreshed_user = refresh_user_token(user)
+
+        if refreshed_user:
+            return refreshed_user
+
+    return user
+
 @app.route("/")
 def index():
     is_connected = "access_token" in session
@@ -232,6 +299,8 @@ def clip_now_with_key(streamdeck_key):
 
     if not user:
         return {"error": "Invalid Stream Deck key"}, 401
+
+    user = get_valid_user_token(user)
 
     session["access_token"] = user["access_token"]
     session["twitch_user_id"] = user["twitch_user_id"]
