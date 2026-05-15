@@ -167,6 +167,31 @@
             color: #61708d;
             letter-spacing: 1px;
         }
+
+        .trigger-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .trigger-box h3 {
+            margin-top: 0;
+            color: #c9d8ff;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+
+        .trigger-box input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #111;
+            color: #00bfff;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 
@@ -179,21 +204,58 @@
 
         {% if is_connected %}
             <div class="status connected">CONNECTED TO TWITCH</div>
-            {% if live_status %}
+
+         {% if live_status %}
             <div class="status connected">CHANNEL IS LIVE</div>
         {% else %}
-             <div class="status disconnected">CHANNEL IS OFFLINE</div>
+            <div class="status disconnected">CHANNEL IS OFFLINE</div>
         {% endif %}
 
-            <p class="subtext">
-                Welcome, {{ display_name }}. Keep this app connected while you stream.
-            </p>
+        <p class="subtext">
+            Welcome, {{ display_name }}. Keep this app connected while you stream.
+        </p>
 
-            <form action="/create-clip" method="POST">
-                <button type="submit" class="main-button button-reset">
-                    Create Clip Now
+         <form action="/create-clip" method="POST">
+            <button type="submit" class="main-button button-reset">
+                Create Clip Now
             </button>
         </form>
+
+    <div class="info-box">
+        <p><strong>Status:</strong> Connected</p>
+        <p><strong>Twitch Username:</strong> {{ twitch_login }}</p>
+        <p><strong>Reminder:</strong> Clipping only works while your channel is live.</p>
+    </div>
+
+    {% if streamdeck_key %}
+        <div class="trigger-box">
+            <h3>Stream Deck Trigger URL</h3>
+
+            <input
+                type="text"
+                value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
+                readonly
+            >
+        </div>
+    {% endif %}
+
+    <a href="/logout" class="logout">Logout</a>
+
+    {% else %}
+    <div class="status disconnected">TWITCH NOT CONNECTED</div>
+
+    <p class="subtext">
+        Connect your Twitch account to let the EvBurst Clipping Tool create clips from your live stream
+        and automatically post them into your Twitch chat.
+    </p>
+
+    <a href="/login" class="main-button">Login with Twitch</a>
+
+            <div class="info-box">
+                <p><strong>Required Twitch permissions:</strong> clipping and posting chat messages.</p>
+                <p><strong>Purpose:</strong> Create clips from your live stream and post them into your Twitch chat.</p>
+            </div>
+        {% endif %}
 
             <div class="info-box">
                 <p><strong>Status:</strong> Connected</p>
@@ -217,6 +279,18 @@
                 <p><strong>Required Twitch permissions:</strong> clipping and posting chat messages.</p>
                 <p><strong>Purpose:</strong> Create clips from your live stream and post them into your Twitch chat.</p>
             </div>
+        {% endif %}
+
+        {% if streamdeck_key %}
+            <div class="trigger-box">
+            <h3>Stream Deck Trigger URL</h3>
+
+            <input
+        type="text"
+        value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
+        readonly
+    >
+        </div>
         {% endif %}
 
         <div class="footer">Tool For Clip Optimization</div>
