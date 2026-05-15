@@ -25,6 +25,9 @@ HELIX_URL = "https://api.twitch.tv/helix"
 
 
 def get_db_connection():
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL is missing from environment variables.")
+
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
 
@@ -192,8 +195,12 @@ def get_valid_user_token(user):
 
     return user
 
-@app.route("/")
+
+@app.route("/", methods=["GET", "HEAD"])
 def index():
+    if request.method == "HEAD":
+        return "", 200
+
     is_connected = "access_token" in session
     live_status = False
 
