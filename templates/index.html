@@ -192,6 +192,25 @@
             font-size: 14px;
         }
 
+        .copy-button {
+            margin-top: 12px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #00cfff, #b84dff);
+            color: #03101a;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 0 20px rgba(0, 207, 255, 0.45),
+                0 0 24px rgba(184, 77, 255, 0.30);
+        }
     </style>
 </head>
 
@@ -227,15 +246,20 @@
             <p><strong>Reminder:</strong> Clipping only works while your channel is live.</p>
         </div>
 
-        {% if streamdeck_key %}
+       {% if streamdeck_key %}
             <div class="trigger-box">
                 <h3>Stream Deck Trigger URL</h3>
 
-            <input
-                type="text"
-                value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
-                readonly
-            >
+                <input
+                    id="triggerUrl"
+                    type="text"
+                    value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
+                    readonly
+                >
+
+                <button class="copy-button" onclick="copyTriggerUrl()">
+                    Copy Trigger URL
+                </button>
             </div>
         {% endif %}
 
@@ -258,5 +282,21 @@
         {% endif %}
                 <div class="footer">Tool For Clip Optimization</div>
             </div>
-        </body>
+            <script>
+                function copyTriggerUrl() {
+                    const input = document.getElementById("triggerUrl");
+
+                    navigator.clipboard.writeText(input.value);
+
+                    const button = document.querySelector(".copy-button");
+
+                    button.innerText = "Copied!";
+
+                    setTimeout(() => {
+                        button.innerText = "Copy Trigger URL";
+                    }, 2000);
+                }
+            </script>
+
+</body>
 </html>
