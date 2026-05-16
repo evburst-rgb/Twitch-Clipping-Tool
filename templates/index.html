@@ -262,6 +262,22 @@
                 </button>
             </div>
         {% endif %}
+        {% if recent_clips %}
+    <div class="trigger-box">
+        <h3>Recent Clips</h3>
+
+        {% for clip in recent_clips %}
+            <div class="info-box" style="margin-top: 12px;">
+                <p><strong>Clip:</strong> {{ clip.clip_id }}</p>
+                <p><strong>Chat Posted:</strong> {{ "Yes" if clip.chat_posted else "No" }}</p>
+
+                <a href="{{ clip.clip_url }}" target="_blank" class="logout">
+                    Open Clip
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
             <a href="/logout" class="logout">Logout</a>
 
