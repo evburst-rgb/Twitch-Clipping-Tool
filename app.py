@@ -50,6 +50,17 @@ def init_db():
         );
     """)
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS clips (
+            id SERIAL PRIMARY KEY,
+            twitch_user_id TEXT NOT NULL,
+            clip_id TEXT NOT NULL,
+            clip_url TEXT NOT NULL,
+            chat_posted BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
+
     conn.commit()
     cur.close()
     conn.close()
@@ -109,6 +120,53 @@ def save_user_token(user, token_json):
     conn.close()
 
     return result["streamdeck_key"]
+
+
+def save_clip(twitch_user_id, clip_id, clip_url, chat_posted):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO clips (
+            twitch_user_id,
+            clip_id,
+            clip_url,
+            chat_posted
+        )
+        VALUES (%s, %s, %s, %s);
+    """, (
+        twitch_user_id,
+        clip_id,
+        clip_url,
+        chat_posted
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def get_recent_clips(twitch_user_id, limit=5):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT clip_id, clip_url, chat_posted, created_at
+        FROM clips
+        WHERE twitch_user_id = %s
+        ORDER BY created_at DESC
+        LIMIT %s;
+    """, (
+        twitch_user_id,
+        limit
+    ))
+
+    clips = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return clips
 
 
 def get_user_by_streamdeck_key(streamdeck_key):
@@ -203,9 +261,11 @@ def index():
 
     is_connected = "access_token" in session
     live_status = False
+    recent_clips = []
 
     if is_connected:
         live_status = check_live_status(session["twitch_user_id"])
+        recent_clips = get_recent_clips(session["twitch_user_id"])
 
     return render_template(
         "index.html",
@@ -214,7 +274,8 @@ def index():
         twitch_login=session.get("twitch_login"),
         twitch_user_id=session.get("twitch_user_id"),
         live_status=live_status,
-        streamdeck_key=session.get("streamdeck_key")
+        streamdeck_key=session.get("streamdeck_key"),
+        recent_clips=recent_clips
     )
 
 
@@ -341,6 +402,13 @@ def create_clip():
 
     chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
     chat_success, chat_response = send_chat_message(chat_message)
+
+    save_clip(
+        session["twitch_user_id"],
+        clip_id,
+        clip_url,
+        chat_success
+    )
 
     return render_template(
         "clip_result.html",
