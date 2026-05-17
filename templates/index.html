@@ -90,7 +90,8 @@
         }
 
         .clips-panel h3,
-        .trigger-box h3 {
+        .trigger-box h3,
+        .hotkey-box h3 {
             margin-top: 0;
             color: #c9d8ff;
             font-size: 16px;
@@ -158,6 +159,7 @@
 
         .info-box,
         .trigger-box,
+        .hotkey-box,
         .clip-card {
             background: rgba(255, 255, 255, 0.045);
             border: 1px solid rgba(255, 255, 255, 0.09);
@@ -171,11 +173,13 @@
             margin: 8px 0;
         }
 
-        .trigger-box {
+        .trigger-box,
+        .hotkey-box {
             margin-top: 20px;
         }
 
-        .trigger-box input {
+        .trigger-box input,
+        .hotkey-box select {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -185,7 +189,8 @@
             font-size: 13px;
         }
 
-        .copy-button {
+        .copy-button,
+        .save-hotkey-button {
             margin-top: 12px;
             width: 100%;
             padding: 12px;
@@ -198,7 +203,8 @@
             transition: 0.15s ease;
         }
 
-        .copy-button:hover {
+        .copy-button:hover,
+        .save-hotkey-button:hover {
             transform: translateY(-1px);
             box-shadow:
                 0 0 20px rgba(0, 207, 255, 0.45),
@@ -272,6 +278,13 @@
             text-align: left;
         }
 
+        .hotkey-note {
+            color: #9fb7d8;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 10px 0 0;
+        }
+
         @media (max-width: 850px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -314,7 +327,7 @@
                     </div>
 
                     <p class="subtext">
-                        Welcome, {{ display_name }}. Use the button below or your Stream Deck trigger to create clips.
+                        Welcome, {{ display_name }}. Use the button below, your Stream Deck trigger, or your saved hotkey to create clips.
                     </p>
 
                     <form action="/create-clip" method="POST">
@@ -345,6 +358,28 @@
                             </button>
                         </div>
                     {% endif %}
+
+                    <div class="hotkey-box">
+                        <h3>Keyboard Hotkey</h3>
+
+                        <form action="/save-hotkey" method="POST">
+                            <select name="hotkey">
+                                {% for hotkey in allowed_hotkeys %}
+                                    <option value="{{ hotkey }}" {% if hotkey == selected_hotkey %}selected{% endif %}>
+                                        {{ hotkey }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="submit" class="save-hotkey-button">
+                                Save Hotkey
+                            </button>
+                        </form>
+
+                        <p class="hotkey-note">
+                            The Windows tray app must be running for keyboard hotkeys to work.
+                        </p>
+                    </div>
 
                     <a href="/logout" class="logout">Logout</a>
                 </div>

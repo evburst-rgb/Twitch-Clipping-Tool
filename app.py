@@ -24,6 +24,9 @@ AUTH_URL = "https://id.twitch.tv/oauth2/authorize"
 TOKEN_URL = "https://id.twitch.tv/oauth2/token"
 HELIX_URL = "https://api.twitch.tv/helix"
 
+ALLOWED_HOTKEYS = ["F8", "F9", "F10"]
+DEFAULT_HOTKEY = "F10"
+
 
 def get_db_connection():
     if not DATABASE_URL:
@@ -46,9 +49,15 @@ def init_db():
             refresh_token TEXT,
             token_expires_at TIMESTAMP,
             streamdeck_key TEXT UNIQUE NOT NULL,
+            hotkey TEXT DEFAULT 'F10',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+    """)
+
+    cur.execute("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS hotkey TEXT DEFAULT 'F10';
     """)
 
     cur.execute("""
@@ -89,12 +98,14 @@ def save_user_token(user, token_json):
     cur = conn.cursor()
 
     cur.execute(
-        "SELECT streamdeck_key FROM users WHERE twitch_user_id = %s;",
+        "SELECT streamdeck_key, hotkey FROM users WHERE twitch_user_id = %s;",
         (user["id"],)
     )
 
     existing_user = cur.fetchone()
+
     streamdeck_key = existing_user["streamdeck_key"] if existing_user else str(uuid.uuid4())
+    hotkey = existing_user["hotkey"] if existing_user and existing_user.get("hotkey") else DEFAULT_HOTKEY
 
     cur.execute("""
         INSERT INTO users (
@@ -105,9 +116,10 @@ def save_user_token(user, token_json):
             refresh_token,
             token_expires_at,
             streamdeck_key,
+            hotkey,
             updated_at
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
         ON CONFLICT (twitch_user_id)
         DO UPDATE SET
             twitch_login = EXCLUDED.twitch_login,
@@ -115,8 +127,9 @@ def save_user_token(user, token_json):
             access_token = EXCLUDED.access_token,
             refresh_token = EXCLUDED.refresh_token,
             token_expires_at = EXCLUDED.token_expires_at,
+            hotkey = COALESCE(users.hotkey, EXCLUDED.hotkey),
             updated_at = CURRENT_TIMESTAMP
-        RETURNING streamdeck_key;
+        RETURNING streamdeck_key, hotkey;
     """, (
         user["id"],
         user["login"],
@@ -124,7 +137,8 @@ def save_user_token(user, token_json):
         access_token,
         refresh_token,
         token_expires_at,
-        streamdeck_key
+        streamdeck_key,
+        hotkey
     ))
 
     result = cur.fetchone()
@@ -133,7 +147,48 @@ def save_user_token(user, token_json):
     cur.close()
     conn.close()
 
-    return result["streamdeck_key"]
+    return result
+
+
+def get_user_by_twitch_id(twitch_user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT * FROM users WHERE twitch_user_id = %s;",
+        (twitch_user_id,)
+    )
+
+    user = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return user
+
+
+def update_user_hotkey(twitch_user_id, hotkey):
+    if hotkey not in ALLOWED_HOTKEYS:
+        return False
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE users
+        SET hotkey = %s,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE twitch_user_id = %s;
+    """, (
+        hotkey,
+        twitch_user_id
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return True
 
 
 def save_clip(
@@ -310,10 +365,17 @@ def index():
     is_connected = "access_token" in session
     live_status = False
     recent_clips = []
+    selected_hotkey = session.get("hotkey", DEFAULT_HOTKEY)
 
     if is_connected:
         live_status = check_live_status(session["twitch_user_id"])
         recent_clips = get_recent_clips(session["twitch_user_id"])
+
+        db_user = get_user_by_twitch_id(session["twitch_user_id"])
+
+        if db_user:
+            selected_hotkey = db_user.get("hotkey") or DEFAULT_HOTKEY
+            session["hotkey"] = selected_hotkey
 
     return render_template(
         "index.html",
@@ -323,7 +385,9 @@ def index():
         twitch_user_id=session.get("twitch_user_id"),
         live_status=live_status,
         streamdeck_key=session.get("streamdeck_key"),
-        recent_clips=recent_clips
+        recent_clips=recent_clips,
+        selected_hotkey=selected_hotkey,
+        allowed_hotkeys=ALLOWED_HOTKEYS
     )
 
 
@@ -386,12 +450,31 @@ def callback():
     session["access_token"] = token_json["access_token"]
 
     user = get_twitch_user()
-    streamdeck_key = save_user_token(user, token_json)
+    saved_user = save_user_token(user, token_json)
 
     session["twitch_user_id"] = user["id"]
     session["display_name"] = user["display_name"]
     session["twitch_login"] = user["login"]
-    session["streamdeck_key"] = streamdeck_key
+    session["streamdeck_key"] = saved_user["streamdeck_key"]
+    session["hotkey"] = saved_user.get("hotkey") or DEFAULT_HOTKEY
+
+    return redirect(url_for("index"))
+
+
+@app.route("/save-hotkey", methods=["POST"])
+def save_hotkey():
+    if "twitch_user_id" not in session:
+        return redirect(url_for("index"))
+
+    hotkey = request.form.get("hotkey", DEFAULT_HOTKEY)
+
+    success = update_user_hotkey(
+        session["twitch_user_id"],
+        hotkey
+    )
+
+    if success:
+        session["hotkey"] = hotkey
 
     return redirect(url_for("index"))
 
@@ -424,6 +507,7 @@ def clip_now_with_key(streamdeck_key):
     session["display_name"] = user["display_name"]
     session["twitch_login"] = user["twitch_login"]
     session["streamdeck_key"] = user["streamdeck_key"]
+    session["hotkey"] = user.get("hotkey") or DEFAULT_HOTKEY
 
     return create_clip()
 
@@ -477,6 +561,19 @@ def create_clip():
         clip_url=clip_url,
         chat_success=chat_success
     )
+
+
+@app.route("/api/user-config/<streamdeck_key>")
+def api_user_config(streamdeck_key):
+    user = get_user_by_streamdeck_key(streamdeck_key)
+
+    if not user:
+        return {"error": "Invalid Stream Deck key"}, 401
+
+    return {
+        "trigger_url": f"{request.host_url.rstrip('/')}/clip-now/{streamdeck_key}",
+        "hotkey": user.get("hotkey") or DEFAULT_HOTKEY
+    }
 
 
 def get_headers():
