@@ -575,6 +575,47 @@ def api_user_config(streamdeck_key):
         "hotkey": user.get("hotkey") or DEFAULT_HOTKEY
     }
 
+@app.route("/api/latest-clip/<streamdeck_key>")
+def api_latest_clip(streamdeck_key):
+
+    user = get_user_by_streamdeck_key(streamdeck_key)
+
+    if not user:
+        return {"error": "Invalid Stream Deck key"}, 401
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            clip_id,
+            clip_url,
+            thumbnail_url,
+            clip_title,
+            created_at
+        FROM clips
+        WHERE twitch_user_id = %s
+        ORDER BY created_at DESC
+        LIMIT 1;
+    """, (
+        user["twitch_user_id"],
+    ))
+
+    clip = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if not clip:
+        return {"error": "No clips found"}, 404
+
+    return {
+        "clip_id": clip["clip_id"],
+        "clip_url": clip["clip_url"],
+        "thumbnail_url": clip["thumbnail_url"],
+        "clip_title": clip["clip_title"]
+    }
+
 
 def get_headers():
     return {
