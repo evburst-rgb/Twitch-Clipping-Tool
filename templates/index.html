@@ -21,12 +21,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            padding: 36px 18px;
         }
 
         body::before {
             content: "";
-            position: absolute;
+            position: fixed;
             inset: 0;
             background:
                 linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
@@ -38,8 +38,8 @@
 
         .card {
             position: relative;
-            width: 540px;
-            max-width: 92%;
+            width: 980px;
+            max-width: 96%;
             background: rgba(8, 10, 28, 0.94);
             border: 1px solid rgba(0, 207, 255, 0.5);
             border-radius: 26px;
@@ -52,8 +52,8 @@
         }
 
         .app-logo {
-            width: 140px;
-            margin-bottom: 16px;
+            width: 120px;
+            margin-bottom: 14px;
             filter:
                 drop-shadow(0 0 12px rgba(0,207,255,0.5))
                 drop-shadow(0 0 18px rgba(184,77,255,0.4));
@@ -76,13 +76,35 @@
             margin-bottom: 30px;
         }
 
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+            text-align: left;
+        }
+
+        .control-panel,
+        .clips-panel {
+            min-width: 0;
+        }
+
+        .clips-panel h3,
+        .trigger-box h3 {
+            margin-top: 0;
+            color: #c9d8ff;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
         .status {
             display: inline-block;
             padding: 8px 16px;
             border-radius: 999px;
             font-size: 13px;
             font-weight: bold;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
+            margin-right: 6px;
             letter-spacing: 1px;
         }
 
@@ -102,10 +124,10 @@
             color: #b9c4d8;
             line-height: 1.6;
             font-size: 15px;
-            margin: 0 0 28px;
+            margin: 0 0 24px;
         }
 
-         .main-button {
+        .main-button {
             display: inline-block;
             text-decoration: none;
             color: #03101a;
@@ -115,18 +137,18 @@
             border-radius: 15px;
             box-shadow:
                 0 0 22px rgba(0, 207, 255, 0.48),
-                 inset 0 0 10px rgba(255,255,255,0.22);
-            margin-bottom: 24px;
+                inset 0 0 10px rgba(255,255,255,0.22);
+            margin-bottom: 22px;
             transition: 0.15s ease;
         }
 
         .button-reset {
-             border: none;
+            border: none;
             cursor: pointer;
             font-family: inherit;
             font-size: 16px;
         }
-        
+
         .main-button:hover {
             transform: translateY(-1px);
             box-shadow:
@@ -134,52 +156,23 @@
                 0 0 40px rgba(184, 77, 255, 0.35);
         }
 
-        .info-box {
+        .info-box,
+        .trigger-box,
+        .clip-card {
             background: rgba(255, 255, 255, 0.045);
             border: 1px solid rgba(255, 255, 255, 0.09);
             border-radius: 17px;
             padding: 16px 18px;
             color: #cbd6ea;
             font-size: 14px;
-            text-align: left;
-            margin-top: 4px;
         }
 
         .info-box p {
             margin: 8px 0;
         }
 
-        .logout {
-            display: inline-block;
-            margin-top: 18px;
-            color: #9fb7d8;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .logout:hover {
-            color: #00cfff;
-        }
-
-        .footer {
-            margin-top: 22px;
-            font-size: 12px;
-            color: #61708d;
-            letter-spacing: 1px;
-        }
-
         .trigger-box {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 14px;
-            background: rgba(255,255,255,0.05);
-        }
-
-        .trigger-box h3 {
-            margin-top: 0;
-            color: #c9d8ff;
-            font-size: 15px;
-            letter-spacing: 1px;
+            margin-top: 20px;
         }
 
         .trigger-box input {
@@ -189,7 +182,7 @@
             border: none;
             background: #111;
             color: #00bfff;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .copy-button {
@@ -211,6 +204,91 @@
                 0 0 20px rgba(0, 207, 255, 0.45),
                 0 0 24px rgba(184, 77, 255, 0.30);
         }
+
+        .logout {
+            display: inline-block;
+            margin-top: 18px;
+            color: #9fb7d8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .logout:hover {
+            color: #00cfff;
+        }
+
+        .clip-card {
+            border: 1px solid rgba(0, 207, 255, 0.22);
+            margin-bottom: 14px;
+            box-shadow: 0 0 18px rgba(0, 207, 255, 0.12);
+        }
+
+        .clip-thumb {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .clip-title {
+            color: #ffffff;
+            font-weight: 800;
+            margin: 0 0 6px;
+            font-size: 14px;
+        }
+
+        .clip-meta {
+            color: #9fb7d8;
+            margin: 0 0 10px;
+            font-size: 13px;
+        }
+
+        .clip-button {
+            display: inline-block;
+            text-decoration: none;
+            color: #03101a;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00cfff, #b84dff);
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .footer {
+            margin-top: 26px;
+            font-size: 12px;
+            color: #61708d;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .login-area {
+            max-width: 540px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .login-area .info-box {
+            text-align: left;
+        }
+
+        @media (max-width: 850px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 28px 20px;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+
+            .title {
+                letter-spacing: 4px;
+            }
+        }
     </style>
 </head>
 
@@ -222,97 +300,132 @@
         <div class="title">CLIPPING TOOL</div>
 
         {% if is_connected %}
-            <div class="status connected">CONNECTED TO TWITCH</div>
+            <div class="dashboard-grid">
 
-        {% if live_status %}
-            <div class="status connected">CHANNEL IS LIVE</div>
+                <div class="control-panel">
+                    <div>
+                        <div class="status connected">CONNECTED TO TWITCH</div>
+
+                        {% if live_status %}
+                            <div class="status connected">CHANNEL IS LIVE</div>
+                        {% else %}
+                            <div class="status disconnected">CHANNEL IS OFFLINE</div>
+                        {% endif %}
+                    </div>
+
+                    <p class="subtext">
+                        Welcome, {{ display_name }}. Use the button below or your Stream Deck trigger to create clips.
+                    </p>
+
+                    <form action="/create-clip" method="POST">
+                        <button type="submit" class="main-button button-reset">
+                            Create Clip Now
+                        </button>
+                    </form>
+
+                    <div class="info-box">
+                        <p><strong>Status:</strong> Connected</p>
+                        <p><strong>Twitch Username:</strong> {{ twitch_login }}</p>
+                        <p><strong>Reminder:</strong> Clipping only works while your channel is live.</p>
+                    </div>
+
+                    {% if streamdeck_key %}
+                        <div class="trigger-box">
+                            <h3>Stream Deck Trigger URL</h3>
+
+                            <input
+                                id="triggerUrl"
+                                type="text"
+                                value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
+                                readonly
+                            >
+
+                            <button class="copy-button" onclick="copyTriggerUrl()">
+                                Copy Trigger URL
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    <a href="/logout" class="logout">Logout</a>
+                </div>
+
+                <div class="clips-panel">
+                    <h3>Recent Clips</h3>
+
+                    {% if recent_clips %}
+                        {% for clip in recent_clips %}
+                            <div class="clip-card">
+                                {% if clip.thumbnail_url %}
+                                    <img src="{{ clip.thumbnail_url }}" alt="Clip thumbnail" class="clip-thumb">
+                                {% endif %}
+
+                                <div class="clip-info">
+                                    <p class="clip-title">
+                                        {{ clip.clip_title or "Untitled Clip" }}
+                                    </p>
+
+                                    <p class="clip-meta">
+                                        Chat Posted: {{ "Yes" if clip.chat_posted else "No" }}
+                                    </p>
+
+                                    <a href="{{ clip.clip_url }}" target="_blank" class="clip-button">
+                                        Open Clip
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="subtext">
+                            No clips yet. Create your first clip while live and it will show here.
+                        </p>
+                    {% endif %}
+                </div>
+
+            </div>
+
         {% else %}
-            <div class="status disconnected">CHANNEL IS OFFLINE</div>
-        {% endif %}
+            <div class="login-area">
+                <div class="status disconnected">TWITCH NOT CONNECTED</div>
 
-        <p class="subtext">
-            Welcome, {{ display_name }}. Keep this app connected while you stream.
-        </p>
+                <p class="subtext">
+                    Connect your Twitch account to let the EvBurst Clipping Tool create clips from your live stream
+                    and automatically post them into your Twitch chat.
+                </p>
 
-        <form action="/create-clip" method="POST">
-            <button type="submit" class="main-button button-reset">
-                Create Clip Now
-            </button>
-        </form>
+                <a href="/login" class="main-button">Login with Twitch</a>
 
-        <div class="info-box">
-            <p><strong>Status:</strong> Connected</p>
-            <p><strong>Twitch Username:</strong> {{ twitch_login }}</p>
-            <p><strong>Reminder:</strong> Clipping only works while your channel is live.</p>
-        </div>
-
-       {% if streamdeck_key %}
-            <div class="trigger-box">
-                <h3>Stream Deck Trigger URL</h3>
-
-                <input
-                    id="triggerUrl"
-                    type="text"
-                    value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
-                    readonly
-                >
-
-                <button class="copy-button" onclick="copyTriggerUrl()">
-                    Copy Trigger URL
-                </button>
+                <div class="info-box">
+                    <p><strong>Required Twitch permissions:</strong> clipping and posting chat messages.</p>
+                    <p><strong>Purpose:</strong> Create clips from your live stream and post them into your Twitch chat.</p>
+                </div>
             </div>
         {% endif %}
-        {% if recent_clips %}
-    <div class="trigger-box">
-        <h3>Recent Clips</h3>
 
-        {% for clip in recent_clips %}
-            <div class="info-box" style="margin-top: 12px;">
-                <p><strong>Clip:</strong> {{ clip.clip_id }}</p>
-                <p><strong>Chat Posted:</strong> {{ "Yes" if clip.chat_posted else "No" }}</p>
-
-                <a href="{{ clip.clip_url }}" target="_blank" class="logout">
-                    Open Clip
-                </a>
-            </div>
-        {% endfor %}
+        <div class="footer">Tool For Clip Optimization</div>
     </div>
-{% endif %}
 
-            <a href="/logout" class="logout">Logout</a>
+    <script>
+        function copyTriggerUrl() {
+            const input = document.getElementById("triggerUrl");
 
-        {% else %}
-            <div class="status disconnected">TWITCH NOT CONNECTED</div>
+            if (!input) {
+                return;
+            }
 
-            <p class="subtext">
-                Connect your Twitch account to let the EvBurst Clipping Tool create clips from your live stream
-                and automatically post them into your Twitch chat.
-            </p>
+            navigator.clipboard.writeText(input.value);
 
-            <a href="/login" class="main-button">Login with Twitch</a>
+            const button = document.querySelector(".copy-button");
 
-            <div class="info-box">
-                <p><strong>Required Twitch permissions:</strong> clipping and posting chat messages.</p>
-                <p><strong>Purpose:</strong> Create clips from your live stream and post them into your Twitch chat.</p>
-            </div>
-        {% endif %}
-                <div class="footer">Tool For Clip Optimization</div>
-            </div>
-            <script>
-                function copyTriggerUrl() {
-                    const input = document.getElementById("triggerUrl");
+            if (!button) {
+                return;
+            }
 
-                    navigator.clipboard.writeText(input.value);
+            button.innerText = "Copied!";
 
-                    const button = document.querySelector(".copy-button");
-
-                    button.innerText = "Copied!";
-
-                    setTimeout(() => {
-                        button.innerText = "Copy Trigger URL";
-                    }, 2000);
-                }
-            </script>
-
+            setTimeout(() => {
+                button.innerText = "Copy Trigger URL";
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
