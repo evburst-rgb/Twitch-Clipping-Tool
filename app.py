@@ -1,5 +1,6 @@
 import os
 import secrets
+import time
 import uuid
 from datetime import datetime, timedelta
 
@@ -56,9 +57,21 @@ def init_db():
             twitch_user_id TEXT NOT NULL,
             clip_id TEXT NOT NULL,
             clip_url TEXT NOT NULL,
+            thumbnail_url TEXT,
+            clip_title TEXT,
             chat_posted BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+    """)
+
+    cur.execute("""
+        ALTER TABLE clips
+        ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;
+    """)
+
+    cur.execute("""
+        ALTER TABLE clips
+        ADD COLUMN IF NOT EXISTS clip_title TEXT;
     """)
 
     conn.commit()
@@ -115,6 +128,7 @@ def save_user_token(user, token_json):
     ))
 
     result = cur.fetchone()
+
     conn.commit()
     cur.close()
     conn.close()
@@ -122,7 +136,14 @@ def save_user_token(user, token_json):
     return result["streamdeck_key"]
 
 
-def save_clip(twitch_user_id, clip_id, clip_url, chat_posted):
+def save_clip(
+    twitch_user_id,
+    clip_id,
+    clip_url,
+    thumbnail_url,
+    clip_title,
+    chat_posted
+):
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -131,13 +152,17 @@ def save_clip(twitch_user_id, clip_id, clip_url, chat_posted):
             twitch_user_id,
             clip_id,
             clip_url,
+            thumbnail_url,
+            clip_title,
             chat_posted
         )
-        VALUES (%s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s);
     """, (
         twitch_user_id,
         clip_id,
         clip_url,
+        thumbnail_url,
+        clip_title,
         chat_posted
     ))
 
@@ -151,7 +176,13 @@ def get_recent_clips(twitch_user_id, limit=5):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT clip_id, clip_url, chat_posted, created_at
+        SELECT
+            clip_id,
+            clip_url,
+            thumbnail_url,
+            clip_title,
+            chat_posted,
+            created_at
         FROM clips
         WHERE twitch_user_id = %s
         ORDER BY created_at DESC
@@ -167,6 +198,23 @@ def get_recent_clips(twitch_user_id, limit=5):
     conn.close()
 
     return clips
+
+
+def get_clip_data(clip_id):
+    response = requests.get(
+        f"{HELIX_URL}/clips",
+        headers=get_headers(),
+        params={
+            "id": clip_id
+        }
+    )
+
+    data = response.json()
+
+    if not data.get("data"):
+        return None
+
+    return data["data"][0]
 
 
 def get_user_by_streamdeck_key(streamdeck_key):
@@ -299,6 +347,7 @@ def login():
     }
 
     query = requests.compat.urlencode(params)
+
     return redirect(f"{AUTH_URL}?{query}")
 
 
@@ -400,6 +449,17 @@ def create_clip():
     clip_id = data["data"][0]["id"]
     clip_url = f"https://clips.twitch.tv/{clip_id}"
 
+    time.sleep(3)
+
+    clip_data = get_clip_data(clip_id)
+
+    thumbnail_url = None
+    clip_title = "Untitled Clip"
+
+    if clip_data:
+        thumbnail_url = clip_data.get("thumbnail_url")
+        clip_title = clip_data.get("title") or "Untitled Clip"
+
     chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
     chat_success, chat_response = send_chat_message(chat_message)
 
@@ -407,6 +467,8 @@ def create_clip():
         session["twitch_user_id"],
         clip_id,
         clip_url,
+        thumbnail_url,
+        clip_title,
         chat_success
     )
 
@@ -431,6 +493,7 @@ def get_twitch_user():
     )
 
     data = response.json()
+
     return data["data"][0]
 
 
@@ -444,6 +507,7 @@ def check_live_status(user_id):
     )
 
     data = response.json()
+
     return len(data.get("data", [])) > 0
 
 

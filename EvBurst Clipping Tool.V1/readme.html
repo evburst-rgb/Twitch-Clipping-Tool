@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>EvBurst Clipping Tool</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+
+      background:
+        radial-gradient(circle at top left, rgba(0, 207, 255, 0.25), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(184, 77, 255, 0.25), transparent 35%),
+        linear-gradient(135deg, #03040c, #08091c 45%, #050612);
+
+      color: white;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 50px 20px;
+
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+
+      background: rgba(8, 10, 28, 0.94);
+
+      border: 1px solid rgba(0, 207, 255, 0.45);
+
+      border-radius: 24px;
+
+      padding: 40px;
+
+      box-shadow:
+        0 0 35px rgba(0, 207, 255, 0.25),
+        0 0 75px rgba(184, 77, 255, 0.15);
+
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      text-align: center;
+
+      font-size: 54px;
+      font-weight: 900;
+
+      letter-spacing: 3px;
+
+      margin-bottom: 6px;
+
+      background: linear-gradient(90deg, #00cfff, #ffffff, #b84dff);
+
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      text-align: center;
+
+      color: #c8d8ff;
+
+      letter-spacing: 8px;
+
+      margin-bottom: 40px;
+
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+
+      padding: 22px;
+
+      border-radius: 18px;
+
+      background: rgba(255, 255, 255, 0.04);
+
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section h2 {
+      margin-top: 0;
+
+      color: #00cfff;
+
+      font-size: 22px;
+
+      letter-spacing: 1px;
+    }
+
+    .section p,
+    .section li {
+      color: #cfd9eb;
+
+      line-height: 1.7;
+
+      font-size: 15px;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    .steps {
+      counter-reset: step;
+
+      padding-left: 0;
+    }
+
+    .steps li {
+      list-style: none;
+
+      margin-bottom: 14px;
+
+      padding-left: 50px;
+
+      position: relative;
+    }
+
+    .steps li::before {
+      counter-increment: step;
+
+      content: counter(step);
+
+      position: absolute;
+
+      left: 0;
+      top: 0;
+
+      width: 32px;
+      height: 32px;
+
+      border-radius: 50%;
+
+      background: linear-gradient(90deg, #00cfff, #b84dff);
+
+      color: #03101a;
+
+      font-weight: bold;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .warning {
+      border-left: 4px solid #ff6b81;
+
+      padding-left: 16px;
+
+      color: #ffb7c3;
+    }
+
+    a {
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+<div class="logo">EVBURST</div>
+
+<div class="subtitle">CLIPPING TOOL</div>
+
+<div class="section">
+
+  <h2>Welcome</h2>
+
+  <p>
+    Thank you for downloading the EvBurst Clipping Tool.
+
+    This application allows you to instantly create Twitch clips,
+    trigger clips directly from Stream Deck,
+    automatically post clips into Twitch chat,
+    and view your recent clips directly from the dashboard.
+  </p>
+
+</div>
+
+<div class="section">
+
+  <h2>Quick Setup</h2>
+
+  <ol class="steps">
+
+    <li>Launch <strong>EvBurst Clipping Tool.exe</strong></li>
+
+    <li>Login with your Twitch account</li>
+
+    <li>Authorize the requested Twitch permissions</li>
+
+    <li>Copy your Stream Deck Trigger URL</li>
+
+    <li>Add a Website action inside Stream Deck</li>
+
+    <li>Paste the Trigger URL into the Stream Deck action</li>
+
+    <li>Press the button while live to instantly create clips</li>
+
+  </ol>
+
+</div>
+
+<div class="section">
+
+  <h2>Features</h2>
+
+  <ul>
+
+    <li>One-button Stream Deck clipping</li>
+
+    <li>Automatic Twitch chat posting</li>
+
+    <li>Persistent clip history dashboard</li>
+
+    <li>Cloud hosted backend system</li>
+
+    <li>Auto-refresh Twitch token support</li>
+
+    <li>Fast deployment-ready architecture</li>
+
+  </ul>
+
+</div>
+
+<div class="section warning">
+
+  <h2>Important</h2>
+
+  <p>
+    Your Twitch channel MUST be live for clipping to work.
+
+    Do not share your Stream Deck Trigger URL with anyone.
+
+    Your trigger URL functions like a private API key.
+  </p>
+
+</div>
+
+<div class="section">
+
+  <h2>Support</h2>
+
+  <p>
+
+    <a href="https://www.twitch.tv/EvBurst" target="_blank" style="color:#00cfff; text-decoration:none;">
+      Twitch: twitch.tv/EvBurst
+    </a>
+
+    <br><br>
+
+    <a href="https://www.tiktok.com/@evburst" target="_blank" style="color:#b84dff; text-decoration:none;">
+      TikTok: @EvBurst
+    </a>
+
+    <br><br>
+
+    <a href="https://discordapp.com/invite/nJwGFQF" target="_blank" style="color:#ffffff; text-decoration:none;">
+      Discord Community Invite
+    </a>
+
+  </p>
+
+</div>
+
+  </div>
+
+</body>
+
+</html>
