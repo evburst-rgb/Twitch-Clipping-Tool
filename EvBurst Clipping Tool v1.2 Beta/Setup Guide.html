@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EvBurst Clipping Tool - Setup Guide</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(0, 207, 255, 0.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(184, 77, 255, 0.22), transparent 36%),
+        linear-gradient(135deg, #02030a, #08091c 45%, #050612);
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 36px 18px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      background: rgba(8, 10, 28, 0.94);
+      border: 1px solid rgba(0, 207, 255, 0.45);
+      border-radius: 28px;
+      box-shadow:
+        0 0 35px rgba(0, 207, 255, 0.22),
+        0 0 75px rgba(184, 77, 255, 0.14);
+      padding: 34px;
+      overflow: hidden;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 28px;
+    }
+
+    .brand {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, #00cfff, #ffffff, #b84dff);
+      -webkit-background-clip: text;
+      color: transparent;
+      line-height: 1;
+    }
+
+    .brand-subtitle {
+      margin-top: 8px;
+      color: #c8d8ff;
+      letter-spacing: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .guide-title {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin: 0 0 10px;
+    }
+
+    .guide-desc {
+      color: #cfd9eb;
+      font-size: 18px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .quick-note {
+      margin-top: 18px;
+      background: rgba(0, 207, 255, 0.08);
+      border: 1px solid rgba(0, 207, 255, 0.25);
+      border-radius: 16px;
+      padding: 14px 16px;
+      color: #cdefff;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin: 34px 0 18px;
+      color: #00cfff;
+      letter-spacing: 1px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .step-card {
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(0, 207, 255, 0.24);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 22px rgba(0, 207, 255, 0.10);
+      position: relative;
+    }
+
+    .step-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #00cfff, #7d4dff);
+      color: #03101a;
+      font-weight: 900;
+      font-size: 20px;
+      flex: 0 0 auto;
+    }
+
+    .step-card h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .step-card p,
+    .step-card li {
+      color: #cfd9eb;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .step-card p {
+      margin: 0;
+    }
+
+    .step-card ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    .callout {
+      margin-top: 14px;
+      border-left: 4px solid #00cfff;
+      background: rgba(0, 207, 255, 0.07);
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #d8f6ff;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .warning {
+      border-left-color: #ff6b81;
+      background: rgba(255, 107, 129, 0.08);
+      color: #ffd5dc;
+    }
+
+    .path-box {
+      margin-top: 14px;
+      background: #070814;
+      border: 1px solid rgba(0, 207, 255, 0.28);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #00cfff;
+      font-size: 18px;
+      font-weight: 900;
+      word-break: break-word;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(184, 77, 255, 0.25);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .option-card strong {
+      display: block;
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .option-card span {
+      color: #b9c4d8;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding-left: 0;
+      list-style: none;
+      margin: 0;
+    }
+
+    .features li {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0, 207, 255, 0.18);
+      border-radius: 14px;
+      padding: 14px;
+      color: #d8e4f6;
+      line-height: 1.5;
+    }
+
+    .support-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .support-link {
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 16px;
+      color: #ffffff;
+      text-align: center;
+      font-weight: 900;
+      transition: 0.15s ease;
+    }
+
+    .support-link:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 18px rgba(0, 207, 255, 0.28),
+        0 0 22px rgba(184, 77, 255, 0.20);
+    }
+
+    .footer-note {
+      color: #6f7f9c;
+      text-align: center;
+      margin-top: 34px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 900px) {
+      .header,
+      .steps-grid,
+      .option-grid,
+      .features,
+      .support-box {
+        grid-template-columns: 1fr;
+      }
+
+      .brand {
+        font-size: 42px;
+      }
+
+      .brand-subtitle {
+        letter-spacing: 4px;
+      }
+
+      .guide-title {
+        font-size: 28px;
+      }
+
+      .page {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <div class="brand">EVBURST</div>
+        <div class="brand-subtitle">CLIPPING TOOL</div>
+      </div>
+
+      <div>
+        <h1 class="guide-title">Start to Finish Setup Guide</h1>
+        <p class="guide-desc">
+          Follow these steps to login, connect your tray app, choose a hotkey,
+          create Twitch clips, and automatically save clips to your PC.
+        </p>
+
+        <div class="quick-note">
+          Best for beta users: launch the app first, login on the dashboard, copy your private Trigger URL,
+          then paste it into the tray app using <strong>Set Trigger URL</strong>.
+        </div>
+      </div>
+    </header>
+
+    <h2 class="section-title">Setup Steps</h2>
+
+    <section class="steps-grid">
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">1</div>
+          <h3>Launch the App</h3>
+        </div>
+        <p>
+          Open <strong>EvBurst Clipping Tool.exe</strong>. The app will run in your Windows system tray near the clock.
+          You may not see a normal window immediately.
+        </p>
+        <div class="callout">Look for the EvBurst tray icon in the hidden icons area.</div>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">2</div>
+          <h3>Open Dashboard</h3>
+        </div>
+        <p>
+          Right-click the tray icon and choose <strong>Open Dashboard</strong>. This opens your personal dashboard in your browser.
+        </p>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">3</div>
+          <h3>Login with Twitch</h3>
+        </div>
+        <p>
+          Click <strong>Login with Twitch</strong> and authorize the requested permissions.
+          These permissions allow the app to create clips and post clip links to your Twitch chat.
+        </p>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">4</div>
+          <h3>Copy Your Trigger URL</h3>
+        </div>
+        <p>
+          After logging in, copy your private <strong>Stream Deck Trigger URL</strong> from the dashboard.
+          This URL is your private clip trigger key.
+        </p>
+        <div class="callout warning">Do not share your Trigger URL. Anyone with this URL could trigger clips on your channel.</div>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">5</div>
+          <h3>Set Trigger URL in the Tray App</h3>
+        </div>
+        <p>
+          Right-click the tray icon, choose <strong>Set Trigger URL</strong>, paste your Trigger URL, and click OK.
+          Your app is now connected to your Twitch clipping account.
+        </p>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">6</div>
+          <h3>Choose Your Hotkey</h3>
+        </div>
+        <p>
+          On the dashboard, choose your preferred one-press hotkey and click <strong>Save Hotkey</strong>.
+        </p>
+        <ul>
+          <li>F8</li>
+          <li>F9</li>
+          <li>F10</li>
+        </ul>
+        <div class="callout">The tray app must be running for hotkeys to work.</div>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">7</div>
+          <h3>Start Clipping</h3>
+        </div>
+        <p>
+          Go live on Twitch, then trigger a clip using one of three options:
+        </p>
+        <div class="option-grid">
+          <div class="option-card">
+            <strong>Hotkey</strong>
+            <span>Press F8, F9, or F10 while live.</span>
+          </div>
+          <div class="option-card">
+            <strong>Stream Deck</strong>
+            <span>Press your Stream Deck Website button.</span>
+          </div>
+          <div class="option-card">
+            <strong>Tray Menu</strong>
+            <span>Right-click the tray icon and select Trigger Clip Now.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="step-card">
+        <div class="step-heading">
+          <div class="step-number">8</div>
+          <h3>View & Download Clips</h3>
+        </div>
+        <p>
+          New clips show on your dashboard with title, thumbnail, and open button.
+          The tray app also downloads created clips to your computer automatically.
+        </p>
+        <div class="path-box">Videos\Stream Clips</div>
+        <div class="callout">Right-click the tray icon and choose <strong>Open Clip Folder</strong> to view downloaded clips.</div>
+      </article>
+    </section>
+
+    <h2 class="section-title">Features Included</h2>
+
+    <ul class="features">
+      <li>One-button Stream Deck clipping</li>
+      <li>One-press keyboard hotkey clipping</li>
+      <li>Automatic Twitch chat posting</li>
+      <li>Automatic local MP4 clip downloads</li>
+      <li>Recent Clips dashboard</li>
+      <li>Clip thumbnails and titles</li>
+      <li>Tray app with Open Dashboard and Open Clip Folder</li>
+      <li>Run at Windows Startup option</li>
+      <li>Cloud-hosted Twitch OAuth backend</li>
+      <li>Twitch token auto-refresh support</li>
+    </ul>
+
+    <h2 class="section-title">Important Notes</h2>
+
+    <section class="step-card">
+      <p>
+        Your Twitch channel must be live for clip creation to work. If you are offline, Twitch will not create a new clip.
+      </p>
+      <div class="callout warning">
+        Keep your Trigger URL private. Treat it like a private key for your channel.
+      </div>
+      <p style="margin-top: 16px;">
+        Dashboard updates and backend improvements are automatic. EXE updates require downloading the newest release ZIP.
+      </p>
+    </section>
+
+    <h2 class="section-title">Support</h2>
+
+    <section class="support-box">
+      <a class="support-link" href="https://www.twitch.tv/EvBurst" target="_blank">Twitch: EvBurst</a>
+      <a class="support-link" href="https://www.tiktok.com/@evburst" target="_blank">TikTok: @EvBurst</a>
+      <a class="support-link" href="https://discordapp.com/invite/nJwGFQF" target="_blank">Discord Community</a>
+    </section>
+
+    <div class="footer-note">EvBurst Clipping Tool Setup Guide</div>
+  </main>
+</body>
+</html>
