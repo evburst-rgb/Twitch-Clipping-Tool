@@ -14,6 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.permanent_session_lifetime = timedelta(days=30)
 
 CLIENT_ID = os.getenv("TWITCH_CLIENT_ID")
 CLIENT_SECRET = os.getenv("TWITCH_CLIENT_SECRET")
@@ -447,6 +448,7 @@ def callback():
     if token_response.status_code != 200:
         return token_json, 400
 
+    session.permanent = True
     session["access_token"] = token_json["access_token"]
 
     user = get_twitch_user()
@@ -551,7 +553,7 @@ def create_clip():
             clip_title = clip_data.get("title") or "Untitled Clip"
             clip_url = clip_data.get("url") or clip_url
 
-        break
+            break
 
     chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
 

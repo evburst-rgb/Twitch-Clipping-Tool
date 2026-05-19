@@ -388,6 +388,8 @@ def quit_app(icon=None, item=None):
 def main():
     sync_config_from_server()
 
+    webbrowser.open(APP_URL)
+
     threading.Thread(target=background_sync_loop, daemon=True).start()
 
     start_hotkey_listener()
