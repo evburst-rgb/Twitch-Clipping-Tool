@@ -514,6 +514,7 @@ def clip_now_with_key(streamdeck_key):
 
 @app.route("/create-clip", methods=["GET", "POST"])
 def create_clip():
+
     if "access_token" not in session:
         return redirect(url_for("index"))
 
@@ -539,16 +540,20 @@ def create_clip():
     clip_data = None
 
     for attempt in range(6):
-    time.sleep(3)
 
-    clip_data = get_clip_data(clip_id)
+        time.sleep(3)
 
-    if clip_data and clip_data.get("thumbnail_url"):
-        thumbnail_url = clip_data.get("thumbnail_url")
-        clip_title = clip_data.get("title") or "Untitled Clip"
-        break
+        clip_data = get_clip_data(clip_id)
+
+        if clip_data and clip_data.get("thumbnail_url"):
+
+            thumbnail_url = clip_data.get("thumbnail_url")
+            clip_title = clip_data.get("title") or "Untitled Clip"
+
+            break
 
     chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
+
     chat_success, chat_response = send_chat_message(chat_message)
 
     save_clip(
