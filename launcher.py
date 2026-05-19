@@ -6,6 +6,7 @@ import threading
 import time
 import webbrowser
 import winreg
+import yt_dlp
 from datetime import datetime
 from pathlib import Path
 from tkinter import Tk, simpledialog, messagebox
@@ -121,9 +122,17 @@ def derive_mp4_url(thumbnail_url):
     if not thumbnail_url:
         return None
 
-    base_url = thumbnail_url.split("-preview-")[0]
-    return f"{base_url}.mp4"
+    if "/thumb/" in thumbnail_url:
+        return thumbnail_url.replace(
+            "/landscape/thumb/thumb-0000000000-480x272.jpg",
+            "/720p60.mp4"
+        )
 
+    if "-preview-" in thumbnail_url:
+        base_url = thumbnail_url.split("-preview-")[0]
+        return f"{base_url}.mp4"
+
+    return None
 
 def sync_config_from_server():
     streamdeck_key = get_streamdeck_key()
@@ -229,39 +238,38 @@ def download_latest_clip():
     clip = get_latest_clip()
 
     if not clip:
+        print("No latest clip found.")
         return False
 
-    thumbnail_url = clip.get("thumbnail_url")
-    mp4_url = derive_mp4_url(thumbnail_url)
-    print("Thumbnail URL:", thumbnail_url)
-    print("Derived MP4 URL:", mp4_url)
+    clip_url = clip.get("clip_url")
 
-    if not mp4_url:
+    if not clip_url:
+        print("No clip URL found.")
         return False
 
     clip_title = clip.get("clip_title") or "Stream Clip"
-    clip_id = clip.get("clip_id") or "clip"
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    filename = f"{timestamp}_{safe_filename(clip_title)}_{clip_id}.mp4"
+    filename = f"{timestamp}_{safe_filename(clip_title)}.mp4"
     save_path = get_default_clip_folder() / filename
 
     try:
-        response = requests.get(mp4_url, stream=True, timeout=60)
+        ydl_opts = {
+            "outtmpl": str(save_path),
+            "format": "mp4/best",
+            "quiet": False,
+            "noplaylist": True,
+        }
 
-        if response.status_code != 200:
-            return False
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([clip_url])
 
-        with open(save_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    file.write(chunk)
-
+        print("Downloaded clip to:", save_path)
         return True
 
-    except Exception:
+    except Exception as e:
+        print("Download failed:", e)
         return False
-
 
 def trigger_clip(icon=None, item=None):
     trigger_url = get_trigger_url()

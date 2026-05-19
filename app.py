@@ -549,8 +549,9 @@ def create_clip():
 
             thumbnail_url = clip_data.get("thumbnail_url")
             clip_title = clip_data.get("title") or "Untitled Clip"
+            clip_url = clip_data.get("url") or clip_url
 
-            break
+        break
 
     chat_message = f"🔥 New Clip! Watch it here: {clip_url}"
 
