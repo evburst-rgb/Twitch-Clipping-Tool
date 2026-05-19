@@ -533,12 +533,12 @@ def create_clip():
     clip_id = data["data"][0]["id"]
     clip_url = f"https://clips.twitch.tv/{clip_id}"
 
-thumbnail_url = None
-clip_title = "Untitled Clip"
+    thumbnail_url = None
+    clip_title = "Untitled Clip"
 
-clip_data = None
+    clip_data = None
 
-for attempt in range(6):
+    for attempt in range(6):
     time.sleep(3)
 
     clip_data = get_clip_data(clip_id)
