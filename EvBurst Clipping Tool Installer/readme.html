@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>EvBurst Clipping Tool - README</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(0, 207, 255, 0.25), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(184, 77, 255, 0.25), transparent 35%),
+        linear-gradient(135deg, #03040c, #08091c 45%, #050612);
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding: 50px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(8, 10, 28, 0.94);
+      border: 1px solid rgba(0, 207, 255, 0.45);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow:
+        0 0 35px rgba(0, 207, 255, 0.25),
+        0 0 75px rgba(184, 77, 255, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+      background: linear-gradient(90deg, #00cfff, #ffffff, #b84dff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #c8d8ff;
+      letter-spacing: 8px;
+      margin-bottom: 40px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 34px;
+      color: #cfd9eb;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 22px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: #00cfff;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    .section p,
+    .section li {
+      color: #cfd9eb;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding-left: 0;
+      list-style: none;
+      margin: 0;
+    }
+
+    .feature-grid li {
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(0, 207, 255, 0.18);
+      border-radius: 14px;
+      padding: 14px;
+      color: #d8e4f6;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(184, 77, 255, 0.22);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .info-card strong {
+      display: block;
+      color: #ffffff;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .info-card span {
+      color: #b9c4d8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .path-box {
+      background: #070814;
+      border: 1px solid rgba(0, 207, 255, 0.28);
+      border-radius: 12px;
+      padding: 14px;
+      color: #00cfff;
+      font-weight: bold;
+      word-break: break-word;
+      margin-top: 12px;
+    }
+
+    .warning {
+      border-left: 4px solid #ff6b81;
+      padding-left: 18px;
+      color: #ffb7c3;
+    }
+
+    .support-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .support-link {
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 16px;
+      color: #ffffff;
+      text-align: center;
+      font-weight: 900;
+      transition: 0.15s ease;
+    }
+
+    .support-link:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 18px rgba(0, 207, 255, 0.28),
+        0 0 22px rgba(184, 77, 255, 0.20);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 36px;
+      color: #6f7f9c;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 760px) {
+      .feature-grid,
+      .info-grid,
+      .support-box {
+        grid-template-columns: 1fr;
+      }
+
+      .logo {
+        font-size: 40px;
+      }
+
+      .subtitle {
+        letter-spacing: 4px;
+      }
+
+      .container {
+        padding: 28px 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">EVBURST</div>
+    <div class="subtitle">CLIPPING TOOL</div>
+
+    <p class="intro">
+      EvBurst Clipping Tool is a creator utility built for Twitch streamers who want fast clip creation,
+      Stream Deck support, keyboard hotkeys, automatic downloads, Twitch chat posting, and a clean dashboard
+      for managing recent clips.
+    </p>
+
+    <div class="section">
+      <h2>Main Features</h2>
+
+      <ul class="feature-grid">
+        <li>One-button Twitch clip creation</li>
+        <li>Stream Deck trigger support</li>
+        <li>Keyboard hotkey support</li>
+        <li>Automatic clip downloads</li>
+        <li>Twitch chat auto-posting</li>
+        <li>Recent Clips History</li>
+        <li>Clip thumbnails and titles</li>
+        <li>Windows tray app support</li>
+        <li>Cloud-hosted dashboard</li>
+        <li>Twitch token auto-refresh</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Hotkey Support</h2>
+
+      <p>
+        Users can trigger clips with a one-press keyboard hotkey while the tray app is running.
+        The current supported hotkey options are:
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <strong>F8</strong>
+          <span>Optional one-press clipping key.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>F9</strong>
+          <span>Optional one-press clipping key.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>F10</strong>
+          <span>Default recommended clipping key.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Synced from Dashboard</strong>
+          <span>The tray app checks the saved dashboard hotkey and uses that key for clipping.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Stream Deck Support</h2>
+
+      <p>
+        Each user receives a private Stream Deck Trigger URL from the dashboard.
+        This URL can be added to a Stream Deck Website action to create clips instantly while live.
+      </p>
+
+      <p>
+        The Stream Deck Trigger URL should be treated like a private key and should not be shared.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Auto Downloads</h2>
+
+      <p>
+        When a clip is created through the tray app, the app downloads the created Twitch clip as an MP4 file.
+        Clips are saved to:
+      </p>
+
+      <div class="path-box">
+        Videos\Stream Clips
+      </div>
+
+      <p>
+        Users can also right-click the tray icon and select <strong>Open Clip Folder</strong>
+        to quickly access downloaded clips.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Dashboard Overview</h2>
+
+      <p>
+        The dashboard gives users a central place to login with Twitch, view live/offline status,
+        copy their private Stream Deck Trigger URL, select their hotkey, and view recent clips.
+      </p>
+
+      <p>
+        The app now opens the dashboard automatically when launched so users know the app is running.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Recent Clips History</h2>
+
+      <p>
+        Recent clips are saved to the user dashboard with clip title, thumbnail, chat posting status,
+        and an open clip button.
+      </p>
+
+      <p>
+        Recent Clips History is designed to help creators quickly review and access clips created during a stream.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Tray App Behavior</h2>
+
+      <p>
+        The Windows tray app runs in the background and powers hotkey clipping, Stream Deck trigger syncing,
+        clip downloads, startup behavior, and quick access controls.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <strong>Open Dashboard</strong>
+          <span>Launches the web dashboard in the browser.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Set Trigger URL</strong>
+          <span>Saves the user's private trigger URL into the tray app.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Trigger Clip Now</strong>
+          <span>Creates a clip directly from the tray menu.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Open Clip Folder</strong>
+          <span>Opens the folder where downloaded clips are stored.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Run at Windows Startup</strong>
+          <span>Allows the tray app to start automatically with Windows.</span>
+        </div>
+
+        <div class="info-card">
+          <strong>Quit</strong>
+          <span>Fully closes the tray app.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Supported Systems</h2>
+
+      <ul>
+        <li>Windows 10</li>
+        <li>Windows 11</li>
+        <li>Twitch account required</li>
+        <li>Internet connection required</li>
+        <li>Stream Deck optional</li>
+        <li>Keyboard hotkeys supported through the Windows tray app</li>
+      </ul>
+    </div>
+
+    <div class="section warning">
+      <h2>Beta Disclaimer</h2>
+
+      <p>
+        This app is currently in beta. Some users may see a Windows SmartScreen warning because the app is new
+        and unsigned. Only download the app from the official EvBurst GitHub Release.
+      </p>
+
+      <p>
+        Twitch channels must be live for new clips to be created. If the channel is offline,
+        Twitch will not generate a clip.
+      </p>
+
+      <p>
+        Dashboard updates are delivered through the hosted web app. EXE updates require downloading
+        the latest release version.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Support Links</h2>
+
+      <div class="support-box">
+        <a class="support-link" href="https://www.twitch.tv/EvBurst" target="_blank">
+          Twitch
+        </a>
+
+        <a class="support-link" href="https://www.tiktok.com/@evburst" target="_blank">
+          TikTok
+        </a>
+
+        <a class="support-link" href="https://discordapp.com/invite/nJwGFQF" target="_blank">
+          Discord
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      EvBurst Clipping Tool • Beta Release
+    </div>
+
+  </div>
+
+</body>
+
+</html>
