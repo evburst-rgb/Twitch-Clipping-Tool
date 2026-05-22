@@ -380,7 +380,6 @@ def index():
             selected_hotkey = db_user.get("hotkey") or DEFAULT_HOTKEY
             session["hotkey"] = selected_hotkey
 
-        hotkey_saved = session.pop("hotkey_saved", False)
 
         return render_template(
         "index.html",
