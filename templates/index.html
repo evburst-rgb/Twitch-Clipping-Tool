@@ -334,6 +334,10 @@
                         Create Clip
                     </button>
 
+                    <a href="/setup-guide" target="_blank" class="main-button">
+                        Open Setup Guide
+                    </a>
+
 <div id="clipAlert" style="
     display:none;
     margin-top:15px;
@@ -434,6 +438,21 @@ document.getElementById("createClipBtn").addEventListener("click", async () => {
                                 Save Hotkey
                             </button>
                         </form>
+                        
+                            {% if hotkey_saved %}
+    <div style="
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #00ff9922;
+        border: 1px solid #00ff99;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    ">
+        ✅ Hotkey Saved Successfully!
+    </div>
+{% endif %}
 
                         <p class="hotkey-note">
                             The Windows tray app must be running for keyboard hotkeys to work.

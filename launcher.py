@@ -96,11 +96,6 @@ def get_streamdeck_key():
     return trigger_url.rstrip("/").split("/")[-1]
 
 
-def get_downloaded_clip_ids():
-    config = load_config()
-    return set(config.get("downloaded_clip_ids", []))
-
-
 def mark_clip_downloaded(clip_id):
     if not clip_id:
         return
@@ -111,6 +106,11 @@ def mark_clip_downloaded(clip_id):
 
     config["downloaded_clip_ids"] = list(downloaded)[-100:]
     save_config(config)
+
+
+def get_downloaded_clip_ids():
+    config = load_config()
+    return set(config.get("downloaded_clip_ids", []))
 
 
 def get_hotkey():
@@ -151,6 +151,7 @@ def derive_mp4_url(thumbnail_url):
 
     return None
 
+
 def sync_config_from_server():
     streamdeck_key = get_streamdeck_key()
 
@@ -187,6 +188,9 @@ def background_sync_loop():
 
 def background_clip_download_loop():
     while True:
+
+        print("Checking for new clips...")
+
         try:
             download_latest_clip()
         except Exception:
@@ -264,13 +268,15 @@ def get_latest_clip():
 def download_latest_clip():
     clip = get_latest_clip()
 
-        clip_id = clip.get("clip_id")
-
-    if clip_id in get_downloaded_clip_ids():
-        return False
-
     if not clip:
         print("No latest clip found.")
+        return False
+
+    clip_id = clip.get("clip_id")
+
+    print("Latest clip ID:", clip_id)
+
+    if clip_id in get_downloaded_clip_ids():
         return False
 
     clip_url = clip.get("clip_url")
@@ -304,6 +310,7 @@ def download_latest_clip():
     except Exception as e:
         print("Download failed:", e)
         return False
+    
 
 def trigger_clip(icon=None, item=None):
     trigger_url = get_trigger_url()
@@ -425,7 +432,6 @@ def main():
     webbrowser.open(APP_URL)
 
     threading.Thread(target=background_sync_loop, daemon=True).start()
-
     threading.Thread(target=background_clip_download_loop, daemon=True).start()
 
     start_hotkey_listener()

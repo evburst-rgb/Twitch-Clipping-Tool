@@ -368,6 +368,8 @@ def index():
     recent_clips = []
     selected_hotkey = session.get("hotkey", DEFAULT_HOTKEY)
 
+    hotkey_saved = session.pop("hotkey_saved", False)
+
     if is_connected:
         live_status = check_live_status(session["twitch_user_id"])
         recent_clips = get_recent_clips(session["twitch_user_id"])
@@ -378,7 +380,9 @@ def index():
             selected_hotkey = db_user.get("hotkey") or DEFAULT_HOTKEY
             session["hotkey"] = selected_hotkey
 
-    return render_template(
+        hotkey_saved = session.pop("hotkey_saved", False)
+
+        return render_template(
         "index.html",
         is_connected=is_connected,
         display_name=session.get("display_name"),
@@ -389,6 +393,7 @@ def index():
         recent_clips=recent_clips,
         selected_hotkey=selected_hotkey,
         allowed_hotkeys=ALLOWED_HOTKEYS
+        hotkey_saved=hotkey_saved,
     )
 
 
@@ -463,6 +468,11 @@ def callback():
     return redirect(url_for("index"))
 
 
+@app.route("/setup-guide")
+def setup_guide():
+    return render_template("SetupGuide.html")
+
+
 @app.route("/save-hotkey", methods=["POST"])
 def save_hotkey():
     if "twitch_user_id" not in session:
@@ -477,6 +487,7 @@ def save_hotkey():
 
     if success:
         session["hotkey"] = hotkey
+        session["hotkey_saved"] = True
 
     return redirect(url_for("index"))
 
