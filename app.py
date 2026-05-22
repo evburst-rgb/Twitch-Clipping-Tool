@@ -393,7 +393,7 @@ def index():
         recent_clips=recent_clips,
         selected_hotkey=selected_hotkey,
         allowed_hotkeys=ALLOWED_HOTKEYS
-        hotkey_saved=hotkey_saved,
+        hotkey_saved=hotkey_saved
     )
 
 
