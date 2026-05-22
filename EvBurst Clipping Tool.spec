@@ -1,12 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_all
+
+datas = [('evburst_clipping_tool.ico', '.')]
+binaries = []
+hiddenimports = ['yt_dlp', 'yt_dlp.extractor', 'yt_dlp.extractor.twitch']
+tmp_ret = collect_all('yt_dlp')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
     ['launcher.py'],
     pathex=[],
-    binaries=[],
-    datas=[('evburst_clipping_tool.ico', '.')],
-    hiddenimports=[],
+    binaries=binaries,
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

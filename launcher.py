@@ -96,6 +96,23 @@ def get_streamdeck_key():
     return trigger_url.rstrip("/").split("/")[-1]
 
 
+def get_downloaded_clip_ids():
+    config = load_config()
+    return set(config.get("downloaded_clip_ids", []))
+
+
+def mark_clip_downloaded(clip_id):
+    if not clip_id:
+        return
+
+    config = load_config()
+    downloaded = set(config.get("downloaded_clip_ids", []))
+    downloaded.add(clip_id)
+
+    config["downloaded_clip_ids"] = list(downloaded)[-100:]
+    save_config(config)
+
+
 def get_hotkey():
     hotkey = load_config().get("hotkey", DEFAULT_HOTKEY).strip().upper()
 
@@ -168,6 +185,16 @@ def background_sync_loop():
         time.sleep(60)
 
 
+def background_clip_download_loop():
+    while True:
+        try:
+            download_latest_clip()
+        except Exception:
+            pass
+
+        time.sleep(20)
+
+
 def set_trigger_url(icon=None, item=None):
 
     def show_prompt():
@@ -237,6 +264,11 @@ def get_latest_clip():
 def download_latest_clip():
     clip = get_latest_clip()
 
+        clip_id = clip.get("clip_id")
+
+    if clip_id in get_downloaded_clip_ids():
+        return False
+
     if not clip:
         print("No latest clip found.")
         return False
@@ -265,6 +297,8 @@ def download_latest_clip():
             ydl.download([clip_url])
 
         print("Downloaded clip to:", save_path)
+        mark_clip_downloaded(clip_id)
+
         return True
 
     except Exception as e:
@@ -391,6 +425,8 @@ def main():
     webbrowser.open(APP_URL)
 
     threading.Thread(target=background_sync_loop, daemon=True).start()
+
+    threading.Thread(target=background_clip_download_loop, daemon=True).start()
 
     start_hotkey_listener()
 

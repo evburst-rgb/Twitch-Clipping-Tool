@@ -568,11 +568,11 @@ def create_clip():
         chat_success
     )
 
-    return render_template(
-        "clip_result.html",
-        clip_url=clip_url,
-        chat_success=chat_success
-    )
+    return {
+        "success": True,
+        "clip_url": clip_url,
+        "chat_success": chat_success
+    }
 
 
 @app.route("/api/user-config/<streamdeck_key>")
@@ -586,6 +586,7 @@ def api_user_config(streamdeck_key):
         "trigger_url": f"{request.host_url.rstrip('/')}/clip-now/{streamdeck_key}",
         "hotkey": user.get("hotkey") or DEFAULT_HOTKEY
     }
+
 
 @app.route("/api/latest-clip/<streamdeck_key>")
 def api_latest_clip(streamdeck_key):

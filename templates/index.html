@@ -330,11 +330,70 @@
                         Welcome, {{ display_name }}. Use the button below, your Stream Deck trigger, or your saved hotkey to create clips.
                     </p>
 
-                    <form action="/create-clip" method="POST">
-                        <button type="submit" class="main-button button-reset">
-                            Create Clip Now
-                        </button>
-                    </form>
+                    <button id="createClipBtn" class="main-button button-reset">
+                        Create Clip
+                    </button>
+
+<div id="clipAlert" style="
+    display:none;
+    margin-top:15px;
+    padding:12px;
+    border-radius:10px;
+    background:#00cfff22;
+    border:1px solid #00cfff;
+    color:white;
+    font-weight:bold;
+">
+    Clip Created Successfully!
+</div>
+
+<script>
+document.getElementById("createClipBtn").addEventListener("click", async () => {
+
+    const button = document.getElementById("createClipBtn");
+    const alertBox = document.getElementById("clipAlert");
+
+    button.disabled = true;
+    button.innerText = "Creating Clip...";
+
+    try {
+
+        const response = await fetch("/create-clip", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alertBox.style.display = "block";
+            alertBox.style.background = "#00ff9922";
+            alertBox.style.border = "1px solid #00ff99";
+            alertBox.innerText = "✅ Clip Created Successfully!";
+
+            setTimeout(() => {
+                alertBox.style.display = "none";
+            }, 4000);
+
+        } else {
+            alertBox.style.display = "block";
+            alertBox.style.background = "#ff335522";
+            alertBox.style.border = "1px solid #ff3355";
+            alertBox.innerText = "❌ Failed to create clip.";
+        }
+
+        } catch (error) {
+            alertBox.style.display = "block";
+            alertBox.style.background = "#ff335522";
+            alertBox.style.border = "1px solid #ff3355";
+            alertBox.innerText = "❌ Error creating clip.";
+        }
+
+    button.disabled = false;
+    button.innerText = "Create Clip";
+
+});
+</script>
 
                     <div class="info-box">
                         <p><strong>Status:</strong> Connected</p>
