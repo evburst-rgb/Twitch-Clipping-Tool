@@ -1,5 +1,5 @@
 #define MyAppName "EvBurst Clipping Tool"
-#define MyAppVersion "2.5"
+#define MyAppVersion "3.0"
 #define MyAppPublisher "EvBurst"
 #define MyAppExeName "EvBurst Clipping Tool.exe"
 
@@ -11,7 +11,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=.
-OutputBaseFilename=EvBurst-Clipping-Tool-Setup-v2.5
+OutputBaseFilename=EvBurst-Clipping-Tool-Setup-v3.0
 SetupIconFile=evburst_clipping_tool.ico
 Compression=lzma
 SolidCompression=yes
@@ -27,7 +27,6 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 [Files]
 Source: "EvBurst Clipping Tool.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "README.html"; DestDir: "{app}"; Flags: ignoreversion
-Source: "SetupGuide.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "evburst_clipping_tool.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]

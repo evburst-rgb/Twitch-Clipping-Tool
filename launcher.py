@@ -20,6 +20,10 @@ APP_NAME = "EvBurst Clipping Tool"
 APP_URL = "https://twitch-clipping-tool.onrender.com"
 ICON_FILE = "evburst_clipping_tool.ico"
 
+CURRENT_VERSION = "v4.0"
+GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/evburst-rgb/Twitch-Clipping-Tool/releases/latest"
+GITHUB_RELEASES_URL = "https://github.com/evburst-rgb/Twitch-Clipping-Tool/releases"
+
 DEFAULT_HOTKEY = "F10"
 
 HOTKEY_MAP = {
@@ -246,6 +250,56 @@ def open_clip_folder(icon=None, item=None):
     os.startfile(folder)
 
 
+def check_for_updates(icon=None, item=None):
+    try:
+        response = requests.get(GITHUB_LATEST_RELEASE_API, timeout=15)
+
+        if response.status_code != 200:
+            messagebox.showwarning(
+                "EvBurst Clipping Tool",
+                "Could not check for updates right now."
+            )
+            return
+
+        data = response.json()
+        latest_version = data.get("tag_name", "").strip()
+
+        if not latest_version:
+            messagebox.showwarning(
+                "EvBurst Clipping Tool",
+                "Could not find the latest release version."
+            )
+            return
+
+        if latest_version.lower() != CURRENT_VERSION.lower():
+            root = Tk()
+            root.withdraw()
+            root.attributes("-topmost", True)
+
+            open_update = messagebox.askyesno(
+                "Update Available",
+                f"A new version is available!\n\nCurrent: {CURRENT_VERSION}\nLatest: {latest_version}\n\nOpen download page?",
+                parent=root
+            )
+
+            root.destroy()
+
+            if open_update:
+                webbrowser.open(GITHUB_RELEASES_URL)
+
+        else:
+            messagebox.showinfo(
+                "EvBurst Clipping Tool",
+                f"You are up to date!\n\nCurrent Version: {CURRENT_VERSION}"
+            )
+
+    except Exception:
+        messagebox.showwarning(
+            "EvBurst Clipping Tool",
+            "Update check failed. Please try again later."
+        )
+
+
 def get_latest_clip():
     streamdeck_key = get_streamdeck_key()
 
@@ -445,6 +499,7 @@ def main():
         pystray.MenuItem(lambda item: f"Trigger Clip Now ({get_hotkey()})", trigger_clip),
         pystray.MenuItem("Open Clip Folder", open_clip_folder),
         pystray.Menu.SEPARATOR,
+        pystray.MenuItem("Check for Updates", check_for_updates),
         pystray.MenuItem(
             "Run at Windows Startup",
             toggle_startup,
