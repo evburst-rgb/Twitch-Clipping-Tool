@@ -1,5 +1,5 @@
 #define MyAppName "EvBurst Clipping Tool"
-#define MyAppVersion "3.0"
+#define MyAppVersion "4.0"
 #define MyAppPublisher "EvBurst"
 #define MyAppExeName "EvBurst Clipping Tool.exe"
 
@@ -11,7 +11,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=.
-OutputBaseFilename=EvBurst-Clipping-Tool-Setup-v3.0
+OutputBaseFilename=EvBurst-Clipping-Tool-Setup-v4.0
 SetupIconFile=evburst_clipping_tool.ico
 Compression=lzma
 SolidCompression=yes

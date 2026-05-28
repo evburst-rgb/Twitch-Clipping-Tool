@@ -7,6 +7,7 @@ import time
 import webbrowser
 import winreg
 import yt_dlp
+import webview
 from datetime import datetime
 from pathlib import Path
 from tkinter import Tk, simpledialog, messagebox
@@ -16,6 +17,8 @@ import requests
 from PIL import Image
 from pynput import keyboard
 
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 APP_NAME = "EvBurst Clipping Tool"
 APP_URL = "https://twitch-clipping-tool.onrender.com"
 ICON_FILE = "evburst_clipping_tool.ico"
@@ -23,6 +26,8 @@ ICON_FILE = "evburst_clipping_tool.ico"
 CURRENT_VERSION = "v4.0"
 GITHUB_LATEST_RELEASE_API = "https://api.github.com/repos/evburst-rgb/Twitch-Clipping-Tool/releases/latest"
 GITHUB_RELEASES_URL = "https://github.com/evburst-rgb/Twitch-Clipping-Tool/releases"
+
+LOCAL_TRIGGER_PORT = 8765
 
 DEFAULT_HOTKEY = "F10"
 
@@ -480,13 +485,48 @@ def quit_app(icon=None, item=None):
     icon.stop()
 
 
+def start_local_trigger_server():
+    class LocalTriggerHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == "/clip":
+                threading.Thread(target=trigger_clip, daemon=True).start()
+
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain")
+                self.end_headers()
+                self.wfile.write(b"Clip triggered successfully.")
+            else:
+                self.send_response(404)
+                self.end_headers()
+
+        def log_message(self, format, *args):
+            return
+
+    try:
+        server = HTTPServer(("127.0.0.1", LOCAL_TRIGGER_PORT), LocalTriggerHandler)
+        server.serve_forever()
+    except Exception as e:
+        print("Local trigger server failed:", e)
+
+
+def open_app_window():
+    webview.create_window(
+        "EvBurst Clipping Tool",
+        APP_URL,
+        width=1100,
+        height=800,
+        resizable=True
+    )
+
+    webview.start()
+
 def main():
     sync_config_from_server()
 
-    webbrowser.open(APP_URL)
 
     threading.Thread(target=background_sync_loop, daemon=True).start()
     threading.Thread(target=background_clip_download_loop, daemon=True).start()
+    threading.Thread(target=start_local_trigger_server, daemon=True).start()
 
     start_hotkey_listener()
 
@@ -516,7 +556,9 @@ def main():
         menu
     )
 
-    tray_icon.run()
+    threading.Thread(target=tray_icon.run, daemon=True).start()
+
+    open_app_window()
 
 
 if __name__ == "__main__":

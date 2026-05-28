@@ -407,12 +407,12 @@ document.getElementById("createClipBtn").addEventListener("click", async () => {
 
                     {% if streamdeck_key %}
                         <div class="trigger-box">
-                            <h3>Stream Deck Trigger URL</h3>
+                            <h3>Local Stream Deck Trigger URL</h3>
 
                             <input
                                 id="triggerUrl"
                                 type="text"
-                                value="https://twitch-clipping-tool.onrender.com/clip-now/{{ streamdeck_key }}"
+                                value="http://127.0.0.1:8765/clip"
                                 readonly
                             >
 

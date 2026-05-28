@@ -367,7 +367,6 @@ def index():
     live_status = False
     recent_clips = []
     selected_hotkey = session.get("hotkey", DEFAULT_HOTKEY)
-
     hotkey_saved = session.pop("hotkey_saved", False)
 
     if is_connected:
@@ -380,8 +379,7 @@ def index():
             selected_hotkey = db_user.get("hotkey") or DEFAULT_HOTKEY
             session["hotkey"] = selected_hotkey
 
-
-        return render_template(
+    return render_template(
         "index.html",
         is_connected=is_connected,
         display_name=session.get("display_name"),
