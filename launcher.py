@@ -11,6 +11,7 @@ import webview
 from datetime import datetime
 from pathlib import Path
 from tkinter import Tk, simpledialog, messagebox
+from urllib.parse import urlparse, parse_qs
 
 import pystray
 import requests
@@ -247,7 +248,7 @@ def set_trigger_url(icon=None, item=None):
 
 
 def open_dashboard(icon=None, item=None):
-    webbrowser.open(APP_URL)
+    threading.Thread(target=open_app_window).start()
 
 
 def open_clip_folder(icon=None, item=None):
@@ -487,17 +488,44 @@ def quit_app(icon=None, item=None):
 
 def start_local_trigger_server():
     class LocalTriggerHandler(BaseHTTPRequestHandler):
+
         def do_GET(self):
-            if self.path == "/clip":
+            parsed_url = urlparse(self.path)
+
+            if parsed_url.path == "/clip":
                 threading.Thread(target=trigger_clip, daemon=True).start()
 
                 self.send_response(200)
                 self.send_header("Content-type", "text/plain")
                 self.end_headers()
                 self.wfile.write(b"Clip triggered successfully.")
-            else:
-                self.send_response(404)
+                return
+
+            if parsed_url.path == "/set-trigger":
+                query = parse_qs(parsed_url.query)
+                trigger_url = query.get("url", [""])[0].strip()
+
+                if trigger_url:
+                    config = load_config()
+                    config["trigger_url"] = trigger_url
+                    save_config(config)
+
+                    sync_config_from_server()
+
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/plain")
+                    self.end_headers()
+                    self.wfile.write(b"Desktop app connected successfully.")
+                    return
+
+                self.send_response(400)
+                self.send_header("Content-type", "text/plain")
                 self.end_headers()
+                self.wfile.write(b"Missing trigger URL.")
+                return
+
+            self.send_response(404)
+            self.end_headers()
 
         def log_message(self, format, *args):
             return
@@ -508,7 +536,7 @@ def start_local_trigger_server():
     except Exception as e:
         print("Local trigger server failed:", e)
 
-
+        
 def open_app_window():
     webview.create_window(
         "EvBurst Clipping Tool",
@@ -520,9 +548,9 @@ def open_app_window():
 
     webview.start()
 
+
 def main():
     sync_config_from_server()
-
 
     threading.Thread(target=background_sync_loop, daemon=True).start()
     threading.Thread(target=background_clip_download_loop, daemon=True).start()
