@@ -423,9 +423,14 @@ def desktop_login(streamdeck_key):
     user = get_user_by_streamdeck_key(streamdeck_key)
 
     if not user:
+        session.clear()
         return redirect(url_for("index"))
 
     user = get_valid_user_token(user)
+
+    if not user or not user.get("access_token"):
+        session.clear()
+        return redirect(url_for("index"))
 
     session.permanent = True
     session["access_token"] = user["access_token"]
