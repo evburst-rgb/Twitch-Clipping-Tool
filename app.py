@@ -418,6 +418,26 @@ def login():
     return redirect(f"{AUTH_URL}?{query}")
 
 
+@app.route("/desktop-login/<streamdeck_key>")
+def desktop_login(streamdeck_key):
+    user = get_user_by_streamdeck_key(streamdeck_key)
+
+    if not user:
+        return redirect(url_for("index"))
+
+    user = get_valid_user_token(user)
+
+    session.permanent = True
+    session["access_token"] = user["access_token"]
+    session["twitch_user_id"] = user["twitch_user_id"]
+    session["display_name"] = user["display_name"]
+    session["twitch_login"] = user["twitch_login"]
+    session["streamdeck_key"] = user["streamdeck_key"]
+    session["hotkey"] = user.get("hotkey") or DEFAULT_HOTKEY
+
+    return redirect(url_for("index"))
+
+
 @app.route("/callback")
 def callback():
     error = request.args.get("error")

@@ -489,6 +489,16 @@ def quit_app(icon=None, item=None):
 def start_local_trigger_server():
     class LocalTriggerHandler(BaseHTTPRequestHandler):
 
+        def send_cors_headers(self):
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
+        def do_OPTIONS(self):
+            self.send_response(200)
+            self.send_cors_headers()
+            self.end_headers()
+
         def do_GET(self):
             parsed_url = urlparse(self.path)
 
@@ -497,6 +507,7 @@ def start_local_trigger_server():
 
                 self.send_response(200)
                 self.send_header("Content-type", "text/plain")
+                self.send_cors_headers()
                 self.end_headers()
                 self.wfile.write(b"Clip triggered successfully.")
                 return
@@ -510,22 +521,30 @@ def start_local_trigger_server():
                     config["trigger_url"] = trigger_url
                     save_config(config)
 
-                    sync_config_from_server()
+                    threading.Thread(
+                        target=sync_config_from_server,
+                        daemon=True
+                    ).start()
 
                     self.send_response(200)
                     self.send_header("Content-type", "text/plain")
+                    self.send_cors_headers()
                     self.end_headers()
                     self.wfile.write(b"Desktop app connected successfully.")
                     return
 
                 self.send_response(400)
                 self.send_header("Content-type", "text/plain")
+                self.send_cors_headers()
                 self.end_headers()
                 self.wfile.write(b"Missing trigger URL.")
                 return
 
             self.send_response(404)
+            self.send_header("Content-type", "text/plain")
+            self.send_cors_headers()
             self.end_headers()
+            self.wfile.write(b"Not found.")
 
         def log_message(self, format, *args):
             return
@@ -536,11 +555,20 @@ def start_local_trigger_server():
     except Exception as e:
         print("Local trigger server failed:", e)
 
-        
+
+def get_dashboard_url():
+    streamdeck_key = get_streamdeck_key()
+
+    if streamdeck_key:
+        return f"{APP_URL}/desktop-login/{streamdeck_key}"
+
+    return APP_URL
+
+
 def open_app_window():
     webview.create_window(
         "EvBurst Clipping Tool",
-        APP_URL,
+        get_dashboard_url(),
         width=1100,
         height=800,
         resizable=True
@@ -563,7 +591,6 @@ def main():
 
     menu = pystray.Menu(
         pystray.MenuItem("Open Dashboard", open_dashboard, default=True),
-        pystray.MenuItem("Set Trigger URL", set_trigger_url),
         pystray.MenuItem(lambda item: f"Trigger Clip Now ({get_hotkey()})", trigger_clip),
         pystray.MenuItem("Open Clip Folder", open_clip_folder),
         pystray.Menu.SEPARATOR,

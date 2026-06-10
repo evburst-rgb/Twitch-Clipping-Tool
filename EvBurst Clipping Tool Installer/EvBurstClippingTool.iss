@@ -1,7 +1,8 @@
 #define MyAppName "EvBurst Clipping Tool"
-#define MyAppVersion "4.0"
+#define MyAppVersion "5.0"
 #define MyAppPublisher "EvBurst"
 #define MyAppExeName "EvBurst Clipping Tool.exe"
+#define MyTriggerExeName "EvBurst Clip Trigger.exe"
 
 [Setup]
 AppId={{8F6C8F9B-4A2D-4B3C-9A1F-EVBURSTCLIP}}
@@ -11,7 +12,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=.
-OutputBaseFilename=EvBurst-Clipping-Tool-Setup-v4.0
+OutputBaseFilename=EvBurst-Clipping-Tool-Setup
 SetupIconFile=evburst_clipping_tool.ico
 Compression=lzma
 SolidCompression=yes
@@ -26,11 +27,12 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 
 [Files]
 Source: "EvBurst Clipping Tool.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "README.html"; DestDir: "{app}"; Flags: ignoreversion
+Source: "EvBurst Clip Trigger.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "evburst_clipping_tool.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\EvBurst Clipping Tool"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\evburst_clipping_tool.ico"
+Name: "{group}\EvBurst Clip Trigger"; Filename: "{app}\{#MyTriggerExeName}"; IconFilename: "{app}\evburst_clipping_tool.ico"
 Name: "{group}\Uninstall EvBurst Clipping Tool"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\EvBurst Clipping Tool"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\evburst_clipping_tool.ico"; Tasks: desktopicon
 
